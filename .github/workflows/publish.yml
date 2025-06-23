@@ -1,37 +1,31 @@
-name: "Release"
+name: Publish
+
 on:
-  release:
-    types:
-      - "released"
+  push:
+    tags:
+      - 'v*'
+
 jobs:
-  build:
-    name: "Release"
-    runs-on: "ubuntu-latest"
+  publish:
+    runs-on: ubuntu-latest
+
     steps:
-      - uses: "actions/checkout@master"
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-      - uses: "graalvm/setup-graalvm@v1"
+      - name: Set up JDK
+        uses: actions/setup-java@v4
         with:
-          java-version: "23"
-          distribution: "graalvm-community"
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          cache: "gradle"
+          java-version: '21'
+          distribution: 'temurin'
 
-      - uses: "actions/cache@master"
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/settings.gradle.kts') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-      - name: Publish
+      - name: Extract version from tag
+        id: extract_version
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+
+      - name: Publish package
+        run: ./gradlew publish
         env:
-          GPG_KEY: ${{ secrets.GPG_KEY }}
-          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
-          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
-        run: |
-          [[ "${{ github.event.release.tag_name }}" =~ ^[0-9]+(\.[0-9]+)*$ ]] || exit -1
-          chmod +x gradlew
-          ./gradlew publishToCentralPortal -Pversion="${{ github.event.release.tag_name }}"
+          USERNAME: ${{ github.actor }}
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_VERSION: ${{ env.RELEASE_VERSION }}
