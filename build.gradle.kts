@@ -28,6 +28,39 @@ centralPortal {
     password = System.getenv("SONATYPE_PASSWORD")
     name = remora.artifactId
     publishingType = PublishingType.USER_MANAGED
+
+    pom {
+        name = remora.artifactId
+        url = "https://github.com/o7studios/agones-java-sdk"
+        remora.description
+
+        developers {
+            developer {
+                id = "julian-siebert"
+                name = "Julian Siebert"
+                email = "mail@julian-siebert.de"
+            }
+        }
+
+        scm {
+            connection = "scm:git:git://github.com/o7studios/agones-java-sdk.git"
+            developerConnection = "scm:git:git@https://github.com/o7studios/agones-java-sdk.git"
+            url = "https://github.com/o7studios/agones-java-sdk"
+            tag = "HEAD"
+        }
+
+        ciManagement {
+            system = "GitHub Actions"
+            url = "https://github.com/o7studios/agones-java-sdk/actions"
+        }
+
+        licenses {
+            license {
+                name = "The Apache Software License, Version 2.0"
+                url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+            }
+        }
+    }
 }
 
 signing {
