@@ -10,10 +10,6 @@ remora {
     artifactId = "agones-sdk"
 
     description = "Agones Java gRPC SDK implementation"
-
-    framework {
-        lombok.isEnabled = true
-    }
 }
 
 dependencies {
@@ -32,7 +28,7 @@ centralPortal {
     pom {
         name = remora.artifactId
         url = "https://github.com/o7studios/agones-java-sdk"
-        remora.description
+        description = remora.description
 
         developers {
             developer {
