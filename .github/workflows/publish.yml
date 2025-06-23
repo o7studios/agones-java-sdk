@@ -27,7 +27,7 @@ jobs:
             ${{ runner.os }}-gradle-
       - name: Publish
         env:
-          GPG_KEY: ${{ secrets.GRADLE_PUBLISH_KEY }}
+          GPG_KEY: ${{ secrets.GPG_KEY }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
