@@ -1,0 +1,37 @@
+name: "Release"
+on:
+  release:
+    types:
+      - "released"
+jobs:
+  build:
+    name: "Release"
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: "actions/checkout@master"
+
+      - uses: "graalvm/setup-graalvm@v1"
+        with:
+          java-version: "23"
+          distribution: "graalvm-community"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          cache: "gradle"
+
+      - uses: "actions/cache@master"
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/settings.gradle.kts') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Publish
+        env:
+          GPG_KEY: ${{ secrets.GRADLE_PUBLISH_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+        run: |
+          [[ "${{ github.event.release.tag_name }}" =~ ^[0-9]+(\.[0-9]+)*$ ]] || exit -1
+          chmod +x gradlew
+          ./gradlew publishToCentralPortal -Pversion="${{ github.event.release.tag_name }}"
