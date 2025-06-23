@@ -1,6 +1,8 @@
+import net.thebugmc.gradle.sonatypepublisher.PublishingType
 
 plugins {
     id("studio.o7.remora") version "0.0.9"
+    id("net.thebugmc.gradle.sonatype-central-portal-publisher") version "1.2.4"
 }
 
 remora {
@@ -21,24 +23,14 @@ dependencies {
 
 java.toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 
-publishing {
-    publications {
-        create<MavenPublication>("gpr") {
-            from(components["java"])
-            groupId = "studio.o7"
-            artifactId = "agones-sdk"
-            version = System.getenv("RELEASE_VERSION") ?: "unspecified"
-        }
-    }
+centralPortal {
+    username = System.getenv("SONATYPE_USERNAME")
+    password = System.getenv("SONATYPE_PASSWORD")
+    name = remora.artifactId
+    publishingType = PublishingType.USER_MANAGED
+}
 
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/o7studios/agones-java-sdk")
-            credentials {
-                username = System.getenv("GITHUB_ACTOR")
-                password = System.getenv("GITHUB_TOKEN")
-            }
-        }
-    }
+signing {
+    useInMemoryPgpKeys(System.getenv("GPG_KEY"), System.getenv("GPG_PASSPHRASE"))
+    sign(publishing.publications)
 }

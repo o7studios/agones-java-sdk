@@ -1,34 +1,37 @@
-name: Publish
-
+name: "Release"
 on:
   release:
-    types: [created]
-
+    types:
+      - "released"
 jobs:
-  publish:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-
+  build:
+    name: "Release"
+    runs-on: "ubuntu-latest"
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+      - uses: "actions/checkout@master"
 
-      - name: Set up JDK
-        uses: actions/setup-java@v4
+      - uses: "graalvm/setup-graalvm@v1"
         with:
-          java-version: '21'
-          distribution: 'temurin'
+          java-version: "21"
+          distribution: "graalvm-community"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          cache: "gradle"
 
-      - name: Extract version from tag
-        id: extract_version
-        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
-
-      - name: Publish to GitHub Packages
-        uses: gradle/gradle-build-action@v2
+      - uses: "actions/cache@master"
         with:
-          arguments: publish
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/settings.gradle.kts') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Publish
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RELEASE_VERSION: ${{ env.RELEASE_VERSION }}
+          GPG_KEY: ${{ secrets.GPG_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+        run: |
+          [[ "${{ github.event.release.tag_name }}" =~ ^[0-9]+(\.[0-9]+)*$ ]] || exit -1
+          chmod +x gradlew
+          ./gradlew publishToCentralPortal -Pversion="${{ github.event.release.tag_name }}"
