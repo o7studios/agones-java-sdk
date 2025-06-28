@@ -4,7 +4,6 @@ import lombok.NonNull;
 import studio.o7.agones.sdk.beta.AgonesBeta;
 
 import java.io.IOException;
-import java.util.function.Consumer;
 
 public interface AgonesSDK {
 
