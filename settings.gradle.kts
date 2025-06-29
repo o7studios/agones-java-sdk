@@ -1,4 +1,4 @@
-rootProject.name = "agones-java-sdk"
+rootProject.name = "agones-sdk"
 
 pluginManagement {
     repositories {
