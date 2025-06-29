@@ -1,3 +1,4 @@
+![agones](https://github.com/user-attachments/assets/c715a4ca-43aa-40f7-84cf-207e3d650040)
 
 # Agones Java Client SDK
 
