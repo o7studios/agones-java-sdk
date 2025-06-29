@@ -1,0 +1,67 @@
+name: "⚙️ CI & Release Workflow"
+on:
+  push:
+  pull_request:
+    types: [ opened, reopened ]
+
+env:
+  REGISTRY: ghcr.io
+  JAVA_VERSION: '21'
+  JAVA_DISTRIBUTION: 'temurin'
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  test:
+    name: ✅ Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: ☕ Setup Java ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: "⚡ Setup Gradle with Cache"
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: "🧪 Run Unit Tests"
+        run: ./gradlew test
+  releaser:
+    name: "🏁 Release"
+    if: startsWith(github.ref, 'refs/tags/')
+    needs:
+      - test
+    runs-on: ubuntu-latest
+    steps:
+      - name: "📥 Checkout Code (Full History)"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: ☕ Setup Java ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: ⚡ Setup Gradle with Cache
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: "🚀 Publish to Maven Central"
+        env:
+          GPG_KEY: ${{ secrets.GPG_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+        run: |
+          RAW_TAG="${GITHUB_REF##*/}"
+          VERSION="${RAW_TAG#v}"
+
+          [[ "$VERSION" =~ ^[0-9]+(\.[0-9]+)*$ ]] || exit -1
+          ./gradlew publishToCentralPortal -Pversion="$VERSION"
