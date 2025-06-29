@@ -1,5 +1,5 @@
 plugins {
-    id("studio.o7.remora") version "0.1.5"
+    id("studio.o7.remora") version "0.1.6"
     id("net.thebugmc.gradle.sonatype-central-portal-publisher") version "1.2.4"
 }
 
