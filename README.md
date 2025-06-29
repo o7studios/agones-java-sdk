@@ -1,5 +1,8 @@
 ![agones](https://github.com/user-attachments/assets/c715a4ca-43aa-40f7-84cf-207e3d650040)
 
+![license](https://img.shields.io/badge/documentation-%20?style=for-the-badge&color=%23181717)
+![license](https://img.shields.io/github/license/o7studios/agones-java-sdk?style=for-the-badge&labelColor=%23181717&color=%23222222)
+
 # Agones Java Client SDK
 
 **Third-party Agones Java Client SDK supporting all stable features and beta counters**
