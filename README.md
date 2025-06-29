@@ -1,6 +1,6 @@
 [![agones](https://github.com/user-attachments/assets/c715a4ca-43aa-40f7-84cf-207e3d650040)](https://agones.dev)
 
-[![maven-central](https://img.shields.io/maven-central/v/studio.o7/agones-sdk?style=for-the-badge&color=%23181717)](https://agones.dev/site/docs/)
+[![maven-central](https://img.shields.io/maven-central/v/studio.o7/agones-sdk?style=for-the-badge&color=%23181717)](https://central.sonatype.com/artifact/studio.o7/agones-sdk)
 [![docs](https://img.shields.io/badge/documentation-%20?style=for-the-badge&color=%23181717)](https://agones.dev/site/docs/)
 [![license](https://img.shields.io/github/license/o7studios/agones-java-sdk?style=for-the-badge&labelColor=%23181717&color=%23222222)](./LICENSE)
 
