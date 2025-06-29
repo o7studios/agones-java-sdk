@@ -1,12 +1,12 @@
 {
-  name: "Agones Java SDK",
-  image: "ubuntu:latest",
-  customizations : {
-    jetbrains : {
-      backend : "IntelliJ",
+  "name": "Agones Java SDK",
+  "image": "ubuntu:latest",
+  "customizations" : {
+    "jetbrains" : {
+      "backend" : "IntelliJ",
     }
   },
-  features: {
+  "features": {
     "ghcr.io/devcontainers/features/git" : {},
     "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
     "ghcr.io/devcontainers/features/java:1": {
@@ -14,5 +14,5 @@
       "installGradle": true,
     }
   },
-  remoteUser: "ubuntu"
+  "remoteUser": "ubuntu"
 }
