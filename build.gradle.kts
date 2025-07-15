@@ -1,5 +1,5 @@
 plugins {
-    id("studio.o7.remora") version "0.2.3"
+    id("studio.o7.remora") version "0.2.4"
 }
 
 group = "studio.o7"
