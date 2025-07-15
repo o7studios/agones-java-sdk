@@ -1,10 +1,11 @@
 plugins {
-    id("studio.o7.remora") version "0.1.6"
+    id("studio.o7.remora") version "0.2.0"
 }
 
 group = "studio.o7"
 
 information {
+    artifactId = "agones-sdk"
     description = "Agones Java gRPC SDK implementation"
     url = "https://github.com/o7studios/agones-java-sdk"
 
