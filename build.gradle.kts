@@ -39,7 +39,7 @@ information {
 
 dependencies {
     implementation("com.squareup.okhttp3:okhttp:5.1.0")
-    implementation("com.google.code.gson:gson:2.13.1")
+    implementation("com.google.code.gson:gson:2.13.2")
 }
 
 java.toolchain.languageVersion.set(JavaLanguageVersion.of(21))
