@@ -28,7 +28,7 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
 
       - name: "⚡ Setup Gradle with Cache"
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v5
 
       - name: "🧪 Run Unit Tests"
         run: ./gradlew test
@@ -51,7 +51,7 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
 
       - name: ⚡ Setup Gradle with Cache
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v5
 
       - name: "🚀 Publish to Maven Central"
         env:
