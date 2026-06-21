@@ -15,6 +15,10 @@ public interface AgonesSDK {
 
     AgonesBeta beta();
 
+    void deallocate() throws IOException;
+
+    GameServer gameServer() throws IOException;
+
     void health() throws IOException;
 
     void ready() throws IOException;

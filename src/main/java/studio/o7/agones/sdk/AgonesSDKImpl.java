@@ -20,18 +20,27 @@ final class AgonesSDKImpl implements AgonesSDK {
     private static final String DEFAULT_URL = "http://localhost:9358/";
     private static final Gson GSON = new GsonBuilder().create();
 
-    private final String url = getUrl();
-    private final OkHttpClient client = new OkHttpClient();
+    private final String url;
+    private final OkHttpClient client;
 
-    private final Request allocateRequest = new Request.Builder()
-            .url(url + "allocate")
-            .addHeader("Content-Type", "application/json")
-            .post(RequestBody.create("{}", MediaType.get("application/json")))
-            .build();
+    AgonesSDKImpl() {
+        this(getUrl());
+    }
+
+    AgonesSDKImpl(@NonNull String url) {
+        this.url = url.endsWith("/") ? url : url + "/";
+        this.client = new OkHttpClient();
+    }
 
     @Override
     public void allocate() throws IOException {
-        try (Response response = client.newCall(allocateRequest).execute()) {
+        Request request = new Request.Builder()
+                .url(url + "allocate")
+                .addHeader("Content-Type", "application/json")
+                .post(RequestBody.create("{}", MediaType.get("application/json")))
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
             if (response.isSuccessful()) return;
             int code = response.code();
             String message = response.message();
@@ -39,15 +48,47 @@ final class AgonesSDKImpl implements AgonesSDK {
         }
     }
 
-    private final Request healthRequest = new Request.Builder()
-            .url(url + "health")
-            .addHeader("Content-Type", "application/json")
-            .post(RequestBody.create("{}", MediaType.get("application/json")))
-            .build();
+    @Override
+    public void deallocate() throws IOException {
+        Request request = readyRequest();
+        try (Response response = client.newCall(request).execute()) {
+            if (response.isSuccessful()) return;
+            int code = response.code();
+            String message = response.message();
+            throw new IOException("Deallocate request failed: " + code + " - " + message);
+        }
+    }
+
+    @Override
+    public GameServer gameServer() throws IOException {
+        Request request = new Request.Builder()
+                .url(url + "gameserver")
+                .addHeader("Content-Type", "application/json")
+                .get()
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            if (response.isSuccessful()) {
+                if (response.body() == null) {
+                    throw new IOException("GameServer request failed: empty response body");
+                }
+                return GSON.fromJson(response.body().string(), GameServer.class);
+            }
+            int code = response.code();
+            String message = response.message();
+            throw new IOException("GameServer request failed: " + code + " - " + message);
+        }
+    }
 
     @Override
     public void health() throws IOException {
-        try (Response response = client.newCall(healthRequest).execute()) {
+        Request request = new Request.Builder()
+                .url(url + "health")
+                .addHeader("Content-Type", "application/json")
+                .post(RequestBody.create("{}", MediaType.get("application/json")))
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
             if (response.isSuccessful()) return;
             int code = response.code();
             String message = response.message();
@@ -55,15 +96,10 @@ final class AgonesSDKImpl implements AgonesSDK {
         }
     }
 
-    private final Request readyRequest = new Request.Builder()
-            .url(url + "ready")
-            .addHeader("Content-Type", "application/json")
-            .post(RequestBody.create("{}", MediaType.get("application/json")))
-            .build();
-
     @Override
     public void ready() throws IOException {
-        try (Response response = client.newCall(readyRequest).execute()) {
+        Request request = readyRequest();
+        try (Response response = client.newCall(request).execute()) {
             if (response.isSuccessful()) return;
             int code = response.code();
             String message = response.message();
@@ -71,15 +107,23 @@ final class AgonesSDKImpl implements AgonesSDK {
         }
     }
 
-    private final Request shutdownRequest = new Request.Builder()
-            .url(url + "shutdown")
-            .addHeader("Content-Type", "application/json")
-            .post(RequestBody.create("{}", MediaType.get("application/json")))
-            .build();
+    private Request readyRequest() {
+        return new Request.Builder()
+                .url(url + "ready")
+                .addHeader("Content-Type", "application/json")
+                .post(RequestBody.create("{}", MediaType.get("application/json")))
+                .build();
+    }
 
     @Override
     public void shutdown() throws IOException {
-        try (Response response = client.newCall(shutdownRequest).execute()) {
+        Request request = new Request.Builder()
+                .url(url + "shutdown")
+                .addHeader("Content-Type", "application/json")
+                .post(RequestBody.create("{}", MediaType.get("application/json")))
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
             if (response.isSuccessful()) return;
             int code = response.code();
             String message = response.message();
@@ -238,7 +282,7 @@ final class AgonesSDKImpl implements AgonesSDK {
         };
     }
 
-    private String getUrl() {
+    private static String getUrl() {
         String port = System.getenv("AGONES_SDK_HTTP_PORT");
         if (port == null || port.isEmpty()) return DEFAULT_URL;
         return "http://localhost:" + port + "/";

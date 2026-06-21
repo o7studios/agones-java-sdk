@@ -2,7 +2,7 @@ name: "⚙️ CI & Release Workflow"
 on:
   push:
   pull_request:
-    types: [ opened, reopened ]
+    types: [ opened, synchronize, reopened ]
 
 env:
   REGISTRY: ghcr.io
@@ -14,8 +14,8 @@ permissions:
   packages: write
 
 jobs:
-  test:
-    name: ✅ Run Tests
+  build:
+    name: ✅ Build and Test
     runs-on: ubuntu-latest
     steps:
       - name: 📥 Checkout Code
@@ -30,13 +30,16 @@ jobs:
       - name: "⚡ Setup Gradle with Cache"
         uses: gradle/actions/setup-gradle@v5
 
-      - name: "🧪 Run Unit Tests"
+      - name: "🧪 Run Tests"
         run: ./gradlew test
+
+      - name: "🏗️ Build"
+        run: ./gradlew build
   releaser:
     name: "🏁 Release"
     if: startsWith(github.ref, 'refs/tags/')
     needs:
-      - test
+      - build
     runs-on: ubuntu-latest
     steps:
       - name: "📥 Checkout Code (Full History)"
