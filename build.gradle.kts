@@ -40,7 +40,7 @@ information {
 dependencies {
     implementation("com.squareup.okhttp3:okhttp:5.4.0")
     implementation("com.google.code.gson:gson:2.14.0")
-    testImplementation("org.junit.jupiter:junit-jupiter:6.1.0")
+    testImplementation("org.junit.jupiter:junit-jupiter:6.1.1")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
